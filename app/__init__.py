@@ -1,0 +1,9 @@
+fastapi==0.118.0
+uvicorn==0.37.0
+
+sqlalchemy==2.0.43
+
+pydantic==2.11.7
+
+pytest==8.4.2
+httpx==0.28.1
