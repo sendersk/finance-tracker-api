@@ -1,8 +1,9 @@
 from datetime import datetime, UTC
-from sqlalchemy import DateTime, Float, Integer, String
+from sqlalchemy import DateTime, Float, Integer, String, Enum
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
+from app.models.enums import TransactionType
 
 
 class Transaction(Base):
@@ -21,6 +22,11 @@ class Transaction(Base):
 
     amount: Mapped[float] = mapped_column(
         Float,
+        nullable=False
+    )
+
+    type: Mapped[TransactionType] = mapped_column(
+        Enum(TransactionType),
         nullable=False
     )
 
