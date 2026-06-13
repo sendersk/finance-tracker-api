@@ -13,7 +13,13 @@ async def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@router.post("/transactions", response_model=TransactionResponse, status_code=201)
+@router.post(
+    "/transactions",
+    response_model=TransactionResponse,
+    status_code=201,
+    summary="Create transaction",
+    tags=["Transactions"]
+)
 async def create_transaction(payload: TransactionCreate, db: Session = Depends(get_db)) -> TransactionResponse:
     service = TransactionService(db)
 
@@ -22,7 +28,12 @@ async def create_transaction(payload: TransactionCreate, db: Session = Depends(g
     return TransactionResponse.model_validate(transaction)
 
 
-@router.get("/transactions", response_model=list[TransactionResponse])
+@router.get(
+    "/transactions",
+    response_model=list[TransactionResponse],
+    summary="Get transactions",
+    tags=["Transactions"]
+)
 async def get_transactions(db: Session = Depends(get_db)) -> list[TransactionResponse]:
     service = TransactionService(db)
 
@@ -34,7 +45,12 @@ async def get_transactions(db: Session = Depends(get_db)) -> list[TransactionRes
     ]
 
 
-@router.delete("/transactions/{transaction_id}", status_code=204)
+@router.delete(
+    "/transactions/{transaction_id}",
+    status_code=204,
+    summary="Delete transaction",
+    tags=["Transactions"]
+)
 async def delete_transaction(transaction_id: int, db: Session = Depends(get_db)) -> None:
     service = TransactionService(db)
 
