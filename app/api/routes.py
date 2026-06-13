@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
@@ -32,3 +32,16 @@ async def get_transactions(db: Session = Depends(get_db)) -> list[TransactionRes
         TransactionResponse.model_validate(transaction)
         for transaction in transactions
     ]
+
+
+@router.delete("/transactions/{transaction_id}", status_code=204)
+async def delete_transaction(transaction_id: int, db: Session = Depends(get_db)) -> None:
+    service = TransactionService(db)
+
+    deleted = service.delete_transaction(transaction_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Transaction not found."
+        )
