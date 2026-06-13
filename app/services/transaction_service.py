@@ -21,6 +21,7 @@ class TransactionService:
         transaction = Transaction(
             title=payload.title,
             amount=payload.amount,
+            type=payload.type,
             category=payload.category
         )
 
