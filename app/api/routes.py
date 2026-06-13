@@ -20,3 +20,15 @@ async def create_transaction(payload: TransactionCreate, db: Session = Depends(g
     transaction = service.create_transaction(payload)
 
     return TransactionResponse.model_validate(transaction)
+
+
+@router.get("/transactions", response_model=list[TransactionResponse])
+async def get_transactions(db: Session = Depends(get_db)) -> list[TransactionResponse]:
+    service = TransactionService(db)
+
+    transactions = service.get_transactions()
+
+    return [
+        TransactionResponse.model_validate(transaction)
+        for transaction in transactions
+    ]
