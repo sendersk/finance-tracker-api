@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.models.enums import TransactionType
 from app.models.transaction import Transaction
 
 
@@ -32,3 +33,17 @@ class TransactionRepository:
         result = self.db.execute(statement)
 
         return result.scalar_one_or_none()
+
+    def get_by_type(self, transaction_type: TransactionType) -> list[Transaction]:
+        statement = select(Transaction).where(Transaction.type == transaction_type)
+
+        result = self.db.execute(statement)
+
+        return list(result.scalars().all())
+
+    def get_by_category(self, category: str) -> list[Transaction]:
+        statement = select(Transaction).where(Transaction.category == category)
+
+        result = self.db.execute(statement)
+
+        return list[result.scalars().all()]
