@@ -1,6 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.models.enums import TransactionType
+
 
 class TransactionCreate(BaseModel):
     title: str = Field(
@@ -12,6 +14,8 @@ class TransactionCreate(BaseModel):
         gt=0
     )
 
+    type: TransactionType
+
     category: str = Field(
         min_length=1,
         max_length=50
@@ -22,6 +26,7 @@ class TransactionResponse(BaseModel):
     id: int
     title: str
     amount: float
+    type: TransactionType
     category: str
     created_at: datetime
 
