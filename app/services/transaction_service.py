@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.enums import TransactionType
 from app.models.transaction import Transaction
 from app.repositories.transaction_repository import TransactionRepository
-from app.schemas.summary import BalanceResponse
+from app.schemas.summary import BalanceResponse, MonthlySummaryResponse
 from app.schemas.transaction import TransactionCreate
 
 logger = logging.getLogger(__name__)
@@ -78,3 +78,35 @@ class TransactionService:
 
     def get_transactions_by_category(self, category: str) -> list[Transaction]:
         return self.repository.get_by_category(category)
+
+    def get_monthly_summary(self, month: int, year: int) -> MonthlySummaryResponse:
+        transactions = self.repository.get_all()
+
+        filtered_transactions = [
+            transaction
+            for transaction in transactions
+            if (
+                transaction.created_at.month == month
+                and transaction.created_at.year == year
+            )
+        ]
+
+        total_income = sum(
+            transaction.amount
+            for transaction in filtered_transactions
+            if transaction.type == TransactionType.INCOME
+        )
+
+        total_expense = sum(
+            transaction.amount
+            for transaction in filtered_transactions
+            if transaction.type == TransactionType.EXPENSE
+        )
+
+        return MonthlySummaryResponse(
+            month=month,
+            year=year,
+            total_income=total_income,
+            total_expense=total_expense,
+            balance=total_income - total_expense
+        )
