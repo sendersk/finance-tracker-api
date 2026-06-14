@@ -72,3 +72,6 @@ class TransactionService:
             total_expense=total_expense,
             balance=total_income - total_expense
         )
+
+    def get_transactions_by_type(self, transaction_type: TransactionType) -> list[Transaction]:
+        return self.repository.get_by_type(transaction_type)

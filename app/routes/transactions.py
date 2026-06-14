@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
+from app.models.enums import TransactionType
 from app.schemas.summary import BalanceResponse
 from app.schemas.transaction import TransactionCreate, TransactionResponse
 from app.services.transaction_service import TransactionService
@@ -69,3 +70,18 @@ async def get_balance(db: Session = Depends(get_db)) -> BalanceResponse:
     service = TransactionService(db)
 
     return service.get_balance()
+
+
+@router.get(
+    "/type/{transaction_type}",
+    response_model=list[TransactionResponse]
+)
+async def get_transactions_by_type(transaction_type: TransactionType, db: Session = Depends(get_db)) -> list[[TransactionResponse]]:
+    service = TransactionService(db)
+
+    transactions = service.get_transactions_by_type(transaction_type)
+
+    return [
+        TransactionResponse.model_validate(transaction)
+        for transaction in transactions
+    ]
