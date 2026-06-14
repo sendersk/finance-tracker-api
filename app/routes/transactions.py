@@ -85,3 +85,18 @@ async def get_transactions_by_type(transaction_type: TransactionType, db: Sessio
         TransactionResponse.model_validate(transaction)
         for transaction in transactions
     ]
+
+
+@router.get(
+    "/category/{category}",
+    response_model=list[TransactionResponse]
+)
+async def get_transactions_by_category(category: str, db: Session = Depends(get_db)) -> list[TransactionResponse]:
+    service = TransactionService(db)
+
+    transactions = service.get_transactions_by_category(category)
+
+    return [
+        TransactionResponse.model_validate(transaction)
+        for transaction in transactions
+    ]

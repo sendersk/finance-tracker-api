@@ -75,3 +75,6 @@ class TransactionService:
 
     def get_transactions_by_type(self, transaction_type: TransactionType) -> list[Transaction]:
         return self.repository.get_by_type(transaction_type)
+
+    def get_transactions_by_category(self, category: str) -> list[Transaction]:
+        return self.repository.get_by_category(category)
