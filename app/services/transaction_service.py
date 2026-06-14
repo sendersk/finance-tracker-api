@@ -1,8 +1,10 @@
 import logging
 from sqlalchemy.orm import Session
 
+from app.models.enums import TransactionType
 from app.models.transaction import Transaction
 from app.repositories.transaction_repository import TransactionRepository
+from app.schemas.summary import BalanceResponse
 from app.schemas.transaction import TransactionCreate
 
 logger = logging.getLogger(__name__)
@@ -49,3 +51,24 @@ class TransactionService:
         self.repository.delete(transaction)
 
         return True
+
+    def get_balance(self) -> BalanceResponse:
+        transactions = self.repository.get_all()
+
+        total_income = sum(
+            transaction.amount
+            for transaction in transactions
+            if transaction.type == TransactionType.INCOME
+        )
+
+        total_expense = sum(
+            transaction.amount
+            for transaction in transactions
+            if transaction.type == TransactionType.EXPENSE
+        )
+
+        return BalanceResponse(
+            total_income=total_income,
+            total_expense=total_expense,
+            balance=total_income - total_expense
+        )
