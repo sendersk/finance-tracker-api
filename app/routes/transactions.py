@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
 from app.models.enums import TransactionType
-from app.schemas.summary import BalanceResponse
+from app.schemas.summary import BalanceResponse, MonthlySummaryResponse
 from app.schemas.transaction import TransactionCreate, TransactionResponse
 from app.services.transaction_service import TransactionService
 
@@ -100,3 +100,13 @@ async def get_transactions_by_category(category: str, db: Session = Depends(get_
         TransactionResponse.model_validate(transaction)
         for transaction in transactions
     ]
+
+
+@router.get(
+    "/summary/{year}/{month}",
+    response_model=MonthlySummaryResponse
+)
+async def get_monthly_summary(year: int, month: int, db: Session = Depends(get_db)) -> MonthlySummaryResponse:
+    service = TransactionService(db)
+
+    return service.get_monthly_summary(month=month, year=year)
