@@ -53,6 +53,9 @@ class TransactionService:
         return True
 
     def get_balance(self) -> BalanceResponse:
+
+        logger.info("Calculating balance")
+
         transactions = self.repository.get_all()
 
         total_income = sum(
@@ -80,6 +83,9 @@ class TransactionService:
         return self.repository.get_by_category(category)
 
     def get_monthly_summary(self, month: int, year: int) -> MonthlySummaryResponse:
+
+        logger.info("Generating monthly summary for %s-%s", year, month)
+
         transactions = self.repository.get_all()
 
         filtered_transactions = [
