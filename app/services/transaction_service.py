@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, UTC
 from sqlalchemy.orm import Session
 
 from app.models.enums import TransactionType
@@ -72,31 +73,36 @@ class TransactionService:
     def get_transactions_by_category(self, category: str) -> list[Transaction]:
         return self.repository.get_by_category(category)
 
-    def get_monthly_summary(self, month: int, year: int) -> MonthlySummaryResponse:
-
-        logger.info("Generating monthly summary for %s-%s", year, month)
-
-        transactions = self.repository.get_all()
-
-        filtered_transactions = [
-            transaction
-            for transaction in transactions
-            if (
-                transaction.created_at.month == month
-                and transaction.created_at.year == year
-            )
-        ]
-
-        total_income = sum(
-            transaction.amount
-            for transaction in filtered_transactions
-            if transaction.type == TransactionType.INCOME
+    def get_monthly_summary(
+            self,
+            month: int,
+            year: int
+    ) -> MonthlySummaryResponse:
+        logger.info(
+            "Generating monthly summary for %s-%s",
+            year,
+            month
         )
 
-        total_expense = sum(
-            transaction.amount
-            for transaction in filtered_transactions
-            if transaction.type == TransactionType.EXPENSE
+        start_date, end_date = self._get_month_range(
+            year,
+            month
+        )
+
+        total_income = (
+            self.repository.get_total_amount_by_type_and_period(
+                TransactionType.INCOME,
+                start_date,
+                end_date
+            )
+        )
+
+        total_expense = (
+            self.repository.get_total_amount_by_type_and_period(
+                TransactionType.EXPENSE,
+                start_date,
+                end_date
+            )
         )
 
         return MonthlySummaryResponse(
@@ -106,3 +112,17 @@ class TransactionService:
             total_expense=total_expense,
             balance=total_income - total_expense
         )
+
+    def _get_month_range(
+            self,
+            year: int,
+            month: int
+    ) -> tuple[datetime, datetime]:
+        start_date = datetime(year, month, 1, tzinfo=UTC)
+
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1, tzinfo=UTC)
+        else:
+            end_date = datetime(year, month + 1, 1, tzinfo=UTC)
+
+        return start_date, end_date

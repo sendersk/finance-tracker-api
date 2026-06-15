@@ -1,3 +1,4 @@
+from datetime import datetime, UTC
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -52,6 +53,23 @@ class TransactionRepository:
         statement = (
             select(func.coalesce(func.sum(Transaction.amount), 0.0))
             .where(Transaction.type == transaction_type)
+        )
+
+        result = self.db.execute(statement)
+
+        return float(result.scalar_one())
+
+    def get_total_amount_by_type_and_period(
+            self,
+            transaction_type: TransactionType,
+            start_date: datetime,
+            end_date: datetime
+    ) -> float:
+        statement = (
+            select(func.coalesce(func.sum(Transaction.amount), 0.0))
+            .where(Transaction.type == transaction_type)
+            .where(Transaction.created_at >= start_date)
+            .where(Transaction.created_at <= end_date)
         )
 
         result = self.db.execute(statement)
