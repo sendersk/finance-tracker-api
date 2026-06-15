@@ -56,19 +56,9 @@ class TransactionService:
 
         logger.info("Calculating balance")
 
-        transactions = self.repository.get_all()
+        total_income = (self.repository.get_total_amount_by_type(TransactionType.INCOME))
 
-        total_income = sum(
-            transaction.amount
-            for transaction in transactions
-            if transaction.type == TransactionType.INCOME
-        )
-
-        total_expense = sum(
-            transaction.amount
-            for transaction in transactions
-            if transaction.type == TransactionType.EXPENSE
-        )
+        total_expense = (self.repository.get_total_amount_by_type(TransactionType.EXPENSE))
 
         return BalanceResponse(
             total_income=total_income,

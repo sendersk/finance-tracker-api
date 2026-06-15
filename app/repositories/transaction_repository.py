@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.enums import TransactionType
@@ -47,3 +47,13 @@ class TransactionRepository:
         result = self.db.execute(statement)
 
         return list[result.scalars().all()]
+
+    def get_total_amount_by_type(self, transaction_type: TransactionType) -> float:
+        statement = (
+            select(func.coalesce(func.sum(Transaction.amount), 0.0))
+            .where(Transaction.type == transaction_type)
+        )
+
+        result = self.db.execute(statement)
+
+        return float(result.scalar_one())
