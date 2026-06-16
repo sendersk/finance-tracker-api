@@ -1,3 +1,5 @@
+from fastapi.testclient import TestClient
+
 from app.models.enums import TransactionType
 from app.models.transaction import Transaction
 from app.services.transaction_service import TransactionService
@@ -48,3 +50,35 @@ def test_balance_calculation(
     assert result.total_income == 5000
     assert result.total_expense == 2000
     assert result.balance == 3000
+
+
+def test_balance_endpoint(client: TestClient) -> None:
+    client.post(
+        "/transactions",
+        json={
+            "title": "Salary",
+            "amount": 5000,
+            "type": "INCOME",
+            "category": "Work",
+        },
+    )
+
+    client.post(
+        "/transactions",
+        json={
+            "title": "Rent",
+            "amount": 2000,
+            "type": "EXPENSE",
+            "category": "Housing",
+        },
+    )
+
+    response = client.get("/transactions/balance")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["total_income"] == 5000
+    assert data["total_expense"] == 2000
+    assert data["balance"] == 3000
