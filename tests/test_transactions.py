@@ -56,3 +56,27 @@ def test_get_transactions(client: TestClient) -> None:
     assert len(data) == 1
 
     assert data[0]["title"] == "Salary"
+
+
+def test_delete_transaction(client: TestClient) -> None:
+    create_response = client.post(
+        "/transactions",
+        json={
+            "title": "Salary",
+            "amount": 5000,
+            "type": "INCOME",
+            "category": "Work",
+        },
+    )
+
+    transaction_id = create_response.json()["id"]
+
+    response = client.delete(f"/transactions/{transaction_id}")
+
+    assert response.status_code == 204
+
+
+def test_delete_non_existing_transaction(client: TestClient) -> None:
+    response = client.delete("/transactions/999")
+
+    assert response.status_code == 404
