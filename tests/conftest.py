@@ -1,8 +1,10 @@
 import pytest
+from fastapi.testclient import TestClient
 from collections.abc import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.main import app
 from app.db.database import Base
 
 TEST_DATABASE_URL = "sqlite:///test_finance.db"
@@ -29,3 +31,8 @@ def db_session() -> Generator[Session]:
         db.close()
 
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture
+def client() -> TestClient:
+    return TestClient(app)
