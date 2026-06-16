@@ -36,7 +36,7 @@ async def create_transaction(payload: TransactionCreate, db: Session = Depends(g
 async def get_transactions(db: Session = Depends(get_db)) -> list[TransactionResponse]:
     service = TransactionService(db)
 
-    transactions = service.get_transactions()
+    transactions = service.get_transaction()
 
     return [
         TransactionResponse.model_validate(transaction)
