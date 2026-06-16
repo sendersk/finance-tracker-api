@@ -11,7 +11,8 @@ from app.db.dependencies import get_db
 TEST_DATABASE_URL = "sqlite:///test_finance.db"
 
 engine = create_engine(
-    TEST_DATABASE_URL
+    TEST_DATABASE_URL,
+    connect_args={"check_same_thread": False}
 )
 
 TestingSessionLocal = sessionmaker(
