@@ -1,4 +1,7 @@
+from datetime import datetime, UTC
+
 from fastapi.testclient import TestClient
+from unicodedata import category
 
 from app.models.enums import TransactionType
 from app.models.transaction import Transaction
@@ -82,3 +85,24 @@ def test_balance_endpoint(client: TestClient) -> None:
     assert data["total_income"] == 5000
     assert data["total_expense"] == 2000
     assert data["balance"] == 3000
+
+
+def test_monthly_summary(db_session) -> None:
+    transaction = Transaction(
+        title="Salary",
+        amount=5000,
+        type=TransactionType.INCOME,
+        category="Work",
+        created_at=datetime(2025, 11, 10, tzinfo=UTC,),
+    )
+
+    db_session.add(transaction)
+    db_session.commit()
+
+    service = TransactionService(db_session)
+
+    result = service.get_monthly_summary(month=11, year=2025,)
+
+    assert result.total_income == 5000
+    assert result.total_expense == 0
+    assert result.balance == 5000
