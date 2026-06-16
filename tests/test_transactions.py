@@ -34,3 +34,25 @@ def test_create_transaction_validation_error(client: TestClient) -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_get_transactions(client: TestClient) -> None:
+    client.post(
+        "/transactions",
+        json={
+            "title": "Salary",
+            "amount": 5000,
+            "type": "INCOME",
+            "category": "Work",
+        },
+    )
+
+    response = client.get("/transactions")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+
+    assert data[0]["title"] == "Salary"
