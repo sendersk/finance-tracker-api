@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from app.core.config import DATABASE_URL
-from app.models.transaction import Transaction
 
 
 class Base(DeclarativeBase):
@@ -22,4 +21,6 @@ SessionLocal = sessionmaker(
 
 
 def create_tables() -> None:
+    import app.models
+
     Base.metadata.create_all(bind=engine)
