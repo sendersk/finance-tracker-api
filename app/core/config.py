@@ -1,9 +1,15 @@
-from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-BASE_DIR: Path = Path(__file__). resolve().parent.parent.parent
 
-APP_NAME: str = "Finance Tracker API"
+class Settings(BaseSettings):
+    APP_NAME: str = "Finance Tracker API"
+    DATABASE_URL: str = "sqlite:///finance.db"
+    DEBUG: bool = True
 
-LOG_LEVEL: str = "INFO"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
-DATABASE_URL: str = "sqlite:///finance.db"
+
+settings = Settings()
