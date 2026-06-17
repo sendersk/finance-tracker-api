@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-from app.core.config import DATABASE_URL
+from app.core.config import settings
 
 
 class Base(DeclarativeBase):
@@ -9,7 +9,7 @@ class Base(DeclarativeBase):
 
 
 engine = create_engine(
-    DATABASE_URL,
+    settings.DATABASE_URL,
     echo=False
 )
 
