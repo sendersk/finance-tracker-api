@@ -18,9 +18,3 @@ SessionLocal = sessionmaker(
     autoflush=False,
     bind=engine
 )
-
-
-def create_tables() -> None:
-    import app.models
-
-    Base.metadata.create_all(bind=engine)
