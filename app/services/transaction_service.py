@@ -7,6 +7,7 @@ from app.models.transaction import Transaction
 from app.repositories.transaction_repository import TransactionRepository
 from app.schemas.summary import BalanceResponse, MonthlySummaryResponse
 from app.schemas.transaction import TransactionCreate
+from app.services.export_service import ExportService
 
 logger = logging.getLogger(__name__)
 
@@ -126,3 +127,8 @@ class TransactionService:
             end_date = datetime(year, month + 1, 1, tzinfo=UTC)
 
         return start_date, end_date
+
+    def export_transactions_csv(self) -> str:
+        transactions = self.repository.get_all()
+
+        return ExportService.transactions_to_csv(transactions)
