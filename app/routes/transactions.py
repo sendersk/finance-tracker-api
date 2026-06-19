@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
@@ -110,3 +111,20 @@ async def get_monthly_summary(year: int, month: int, db: Session = Depends(get_d
     service = TransactionService(db)
 
     return service.get_monthly_summary(month=month, year=year)
+
+
+@router.get("/export/csv")
+async def export_transactions_csv(db: Session = Depends(get_db)) -> Response:
+    service = TransactionService(db)
+
+    csv_content = service.export_transactions_csv()
+
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition":
+                "attachment; "
+                "filename=transactions.csv"
+        },
+    )
