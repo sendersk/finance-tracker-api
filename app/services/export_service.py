@@ -1,12 +1,20 @@
 import csv
+import logging
 from io import StringIO
 
 from app.models.transaction import Transaction
+
+logger = logging.getLogger(__name__)
 
 
 class ExportService:
     @staticmethod
     def transactions_to_csv(transactions: list[Transaction]) -> str:
+        logger.info(
+            "Exporting %s transactions to CSV",
+            len(transactions),
+        )
+
         output = StringIO()
 
         writer = csv.writer(output)
