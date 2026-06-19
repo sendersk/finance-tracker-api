@@ -80,3 +80,23 @@ def test_delete_non_existing_transaction(client: TestClient) -> None:
     response = client.delete("/transactions/999")
 
     assert response.status_code == 404
+
+
+def test_export_transactions_csv(client: TestClient) -> None:
+    client.post(
+        "/transactions",
+        json={
+            "title": "Salary",
+            "amount": 5000,
+            "type": "INCOME",
+            "category": "Work",
+        },
+    )
+
+    response = client.get("/transactions/export/csv")
+
+    assert response.status_code == 200
+
+    assert (response.headers["content-type"] == "text/csv; charset=utf-8")
+
+    assert "Salary" in response.text
